@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<conio.h>
 
 /***************************************************************
 	reverse array
@@ -14,7 +13,7 @@ int main(){
 		printf("Enter element %d :: ", i+1);
 		scanf("%d", &n[i]);
 	}
-	j  = e-1
+	j  = e-1;
 	for (i=0; i<e/2; i++){
 		//j = e-i-1
 		temp = n[i];

@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<conio.h>
+
 /************************************************************
 		WAP TO GENERATE AND DISPLAY FIRST N NATURAL NUMBERS
 =============================================================

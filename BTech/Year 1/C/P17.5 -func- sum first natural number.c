@@ -1,5 +1,5 @@
-#include<conio.h>
 #include<stdio.h>
+
 /*
 	sum first n using recursive
 */

@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<conio.h>
+
 /************************************************************
 		WAP TO DISPLAY all even no till nth natural no.
 =============================================================

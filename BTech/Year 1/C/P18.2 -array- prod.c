@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<conio.h>
 
 /***************************************************************
 	Initializing array element by using user input

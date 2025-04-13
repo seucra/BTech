@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<conio.h>
 
 /***************************************************************
 	clock wise rotation of elements in an array

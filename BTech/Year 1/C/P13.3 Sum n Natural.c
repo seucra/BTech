@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<conio.h>
+
 /************************************************************
 		WAP TO CALC summ of first n natural using FOR loop
 =============================================================

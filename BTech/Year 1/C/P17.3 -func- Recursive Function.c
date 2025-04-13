@@ -1,5 +1,5 @@
-#include<conio.h>
 #include<stdio.h>
+
 /*
 	factorial using recursive funtion calling
 */
