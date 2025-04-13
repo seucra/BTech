@@ -17,14 +17,14 @@ int main()
 	printf("enter no of entries :: ");
 	scanf("%n", &n);
 	
-	struct book books;
+	struct book *books;
 	
 	for(int i=0; i<n; i++)
 	{
 		printf("enter title of book :: ");
 		scanf("%[^\n]", &books[i].title);
 		printf("enter auther of book :: ");
-		scanf("%[^\n]", &books[i].auther);
+		scanf("%[^\n]", &books[i].author);
 		printf("enter price of book :: ");
 		scanf("%d", &books[i].price);
 		printf("enter publisher of book :: ");
@@ -34,7 +34,7 @@ int main()
 	for (int i=0; i<n; i++)
 	{
 		printf("title, auther, price, publisher\n\n");
-		printf("%s, %s, %d, %s", &books[i].title, &books[i].auther, &books[i].price, &books[i].publisher);
+		printf("%s, %s, %d, %s", &books[i].title, &books[i].author, &books[i].price, &books[i].publisher);
 	}
 }
 
