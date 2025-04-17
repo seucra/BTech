@@ -2,10 +2,12 @@
 //	Applet to print hello world
 
 import java.applet.Applet;
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class AppletHelloWorld extends Applet{
 	public void init(){
+		setBackground(Color.RED);
 		resize(200,200);
 	}
 
