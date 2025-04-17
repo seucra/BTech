@@ -1,4 +1,4 @@
-public class TestArray {
+public class J001J3DArray {
     public static void main(String[] args) {
         int a[][][] = new int[5][6][7];
         for(int i=0;i<5;i++){
