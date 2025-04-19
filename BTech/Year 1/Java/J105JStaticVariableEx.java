@@ -32,6 +32,6 @@ class J105JStaticVariableEx{
         Circle cl = new Circle();
         Circle c2 = new Circle (5.0);
         Circle c3 = new Circle (cl);
-        System.out.println("cl"+cl.circlecount+"\nc2"+c2.circlecount+"\nc38"+c3.circlecount);
+        System.out.println("cl"+Circle.circlecount+"\nc2"+Circle.circlecount+"\nc38"+Circle.circlecount);
     }
 }
