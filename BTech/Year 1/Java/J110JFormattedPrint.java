@@ -1,4 +1,4 @@
-public class J110JFormattedPrint {
+class J110JFormattedPrint {
     public static void main(String[] args) {
         //Noformatting
         int x = 100;

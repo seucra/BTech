@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class J108JInputScanner {
+class J108JInputScanner {
     public static void main(String[] args) {
         //Construct scanner class object
         Scanner sc = new Scanner(System.in);

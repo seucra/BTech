@@ -1,7 +1,7 @@
 import java.io.*;
 
 //Calculator Program
-public class J109JDataInputStream {
+class J109JDataInputStream {
     public static void main(String[] args) {
         Float pAmt = new Float(0);
         Float roInterst = new Float(0);
