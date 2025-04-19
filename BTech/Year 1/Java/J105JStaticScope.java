@@ -1,4 +1,4 @@
-class J105JStaticScopeExample{
+class J105JStaticScope{
     static int classVariable = 10; // Class-level static variable
 
     public static void main(String[] args) {

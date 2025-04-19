@@ -27,11 +27,11 @@ class Circle{
     }
 }
 
-class J105JStaticVariableEx{
-    static void main(String args[]){
+class J105JStaticVariable{
+    public static void main(String args[]){
         Circle cl = new Circle();
         Circle c2 = new Circle (5.0);
         Circle c3 = new Circle (cl);
-        System.out.println("cl"+Circle.circlecount+"\nc2"+Circle.circlecount+"\nc38"+Circle.circlecount);
+        System.out.println("cl "+Circle.circlecount+"\nc2 "+Circle.circlecount+"\nc3 "+Circle.circlecount);
     }
 }
