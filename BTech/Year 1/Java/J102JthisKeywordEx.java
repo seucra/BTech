@@ -16,7 +16,7 @@ class circle{
     }
 }
 
-class J104thisKeywordEx {
+class J102JthisKeywordEx {
     public static void main(String[] args) {
         circle c1 = new circle(0.0, 0.0, 5.0);
         circle c2 = new circle(1.1, 2.2, 6.6);

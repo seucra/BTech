@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class J108InpurScannerArray {
+public class J103JInputScannerArray {
     public static void main(String[] args) {
         int sum = 0;    int avg = 0;
 

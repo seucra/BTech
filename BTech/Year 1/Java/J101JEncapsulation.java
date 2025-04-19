@@ -10,7 +10,7 @@ class cirlce{
     }
 }
 
-class J101Encapsulation {
+class J101JEncapsulation {
     public static void main(String args[]){
         cirlce c = new cirlce();
         c.x = 0.0;

@@ -8,7 +8,7 @@ class A{
     }
 }
 
-class J106thisKeywordSpecialUse {
+class J102JthisKeywordSpecialUse {
     public static void main(String[] args) {
         A a = new A();
     }

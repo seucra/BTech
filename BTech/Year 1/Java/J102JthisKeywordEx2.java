@@ -18,7 +18,7 @@ class Student{
     }
 }
 
-class J105thisKeywordEx2 {
+class J102JthisKeywordEx2 {
     public static void main(String[] args) {
         Student s1 = new Student(1 , "Star", "CS");
         Student s2 = new Student(2 , "Star2", "CS", 6000f);
