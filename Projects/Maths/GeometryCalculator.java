@@ -1,4 +1,4 @@
-package BTech.Projects.geometry;
+package BTech.Projects.maths;
 
 import java.util.Scanner;
 
