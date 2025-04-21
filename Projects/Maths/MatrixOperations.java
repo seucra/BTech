@@ -155,7 +155,7 @@ class Matrix{
 
 }
 
-class Calc {
+class MatrixOperations {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
