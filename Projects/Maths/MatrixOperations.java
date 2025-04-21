@@ -1,5 +1,5 @@
 import java.util.*;
-
+import java.io.*;
 
 class Matrix{
     private int row, column;
@@ -174,6 +174,59 @@ class Matrix{
         }
     }
 
+
+    public void writeToFile(String filename) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (int i = 0; i < this.row; i++) {
+                for (int j = 0; j < this.column; j++) {
+                    writer.write(data[i][j] + " ");  // Writing each element separated by a space
+                }
+                writer.newLine();  // Move to the next line after each row
+            }
+        }
+    }
+
+    // Method to read matrix data from a file
+    static Matrix readFromFile(String filename) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            List<int[]> rows = new ArrayList<>();  // List to store rows as int arrays
+    
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(" ");  // Split line into string elements
+                int[] row = new int[tokens.length]; // Create a new row for the matrix
+    
+                // Convert string elements to integers and store them in the row
+                for (int i = 0; i < tokens.length; i++) {
+                    row[i] = Integer.parseInt(tokens[i]);
+                }
+                rows.add(row);  // Add the row to the list
+            }
+    
+            // Determine matrix dimensions (rows and columns)
+            int rowCount = rows.size();
+            int columnCount = rows.get(0).length;
+    
+            // Create a new Matrix object with the appropriate dimensions
+            Matrix matrix = new Matrix(rowCount, columnCount);
+    
+            // Fill the matrix with data
+            for (int i = 0; i < rowCount; i++) {
+                for (int j = 0; j < columnCount; j++) {
+                    matrix.setValue(i, j, rows.get(i)[j]);  // Set each element in the matrix
+                }
+            }
+    
+            return matrix;  // Return the populated matrix
+        }
+    }
+
+    void setMatrix(List<int[]> rows, int i) {
+        // Set data for each row in matrix
+        for (int j = 0; j < rows.get(i).length; j++) {
+            this.data[i][j] = rows.get(i)[j];
+        }
+    }
 }
 
 class MatrixOperations {
@@ -215,15 +268,31 @@ class MatrixOperations {
                     break;
             }
         }
-*/
-        int[][] data = {
-            {1, 2, 3, 4},
-            {5, 6, 7, 8},
-            {9, 10, 11, 12},
-            {13, 14, 15, 16}
-        };
+*///
+try {
+    // Create a sample matrix
+    Matrix m = new Matrix(3, 3);
+    m.setValue(0, 0, 1);
+    m.setValue(0, 1, 2);
+    m.setValue(0, 2, 3);
+    m.setValue(1, 0, 4);
+    m.setValue(1, 1, 5);
+    m.setValue(1, 2, 6);
+    m.setValue(2, 0, 7);
+    m.setValue(2, 1, 8);
+    m.setValue(2, 2, 9);
+    
+    // Write the matrix to a file
+    m.writeToFile("matrix.txt");
 
-        Matrix matrix = new Matrix(4, 4, data);
-        System.out.println("Determinant: " + matrix.determinant());
+    // Read the matrix from the file
+    Matrix readMatrix = Matrix.readFromFile("matrix.txt");
+
+    // Print the matrix read from file
+    readMatrix.printMatrix();
+
+} catch (IOException e) {
+    e.printStackTrace();
+}
     }
 }
