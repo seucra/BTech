@@ -1,8 +1,5 @@
 import java.util.*;
 
-import org.omg.CORBA.MARSHAL;
-
-import java.io.File;
 
 class Matrix{
     private int row, column;
@@ -13,7 +10,14 @@ class Matrix{
         this.column = column;
         this.data = new int[row][column];
     }
+    Matrix(int row, int column, int[][] data){
+        this(row, column);
+        this.data = data;
+    }
 
+    void setMatrix(int[][] data){
+        this.data = data;
+    }
     void setValue(int row, int col, int value) {
         data[row][col] = value;
     }
@@ -117,36 +121,53 @@ class Matrix{
         return type;
     }
 
-    // determinant 
-    int determinant(){
+    // Minor
+    public Matrix minorMatrix(int row, int col){
+        Matrix minorMatrix = new Matrix(this.row -1, this.column -1);
+        
+        int minorRow =0;
+        for(int i=0; i<this.row; i++){
+            if (i == row)   continue;
+
+            int minorColumn =0;
+            for(int j=0; j<this.row; j++){
+                if (j == col)       continue;
+
+                minorMatrix.setValue(minorRow, minorColumn, this.data[i][j]);
+                minorColumn++;
+            }
+            minorRow++;
+        }
+
+        return minorMatrix;
+    }
+    // determinant using cofactor expansion
+    public int determinant() {
+        if (this.row != this.column) {
+            throw new IllegalArgumentException("Matrix must be square (rows == columns)");
+        }
+
+        // Base case for 2x2 matrix
+        if (this.row == 2) {
+            return (this.data[0][0] * this.data[1][1]) - (this.data[0][1] * this.data[1][0]);
+        }
+
         int det = 0;
-        int t=1;    
-        int c=0;
-        //  row == column
-        for (int i=0; i<this.row; i++){
-            for (int j=0; j<this.row; j++){
-                t *= this.data[(i+c) % this.row][(j+c) % this.row];
-                c++;
-            }
-            c=0;
+
+        // Loop for cofactor expansion along the first row
+        for (int i = 0; i < this.row; i++) {
+            det += (int) Math.pow(-1, i) * this.data[0][i] * minorMatrix(0, i).determinant();
         }
-        det += t;
-        t=1;
-        for (int i=0; i<this.row; i++){
-            for (int j=this.row-1; j>=0; j--){
-                t *= this.data[(i+c) % this.row][(j+c) % this.row];
-                c++;
-            }
-            c=0;
-        }
+
         return det;
     }
+
     // matrix inversion
     // matrix rank
 
     public void printMatrix() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
+        for (int i = 0; i < this.row; i++) {
+            for (int j = 0; j < this.column; j++) {
                 System.out.print(data[i][j] + " ");
             }
             System.out.println();
@@ -157,7 +178,7 @@ class Matrix{
 
 class MatrixOperations {
     public static void main(String[] args) {
-
+/**
         Scanner sc = new Scanner(System.in);
         Matrix[] matrixs = new Matrix[20];
         
@@ -194,5 +215,15 @@ class MatrixOperations {
                     break;
             }
         }
+*/
+        int[][] data = {
+            {1, 2, 3, 4},
+            {5, 6, 7, 8},
+            {9, 10, 11, 12},
+            {13, 14, 15, 16}
+        };
+
+        Matrix matrix = new Matrix(4, 4, data);
+        System.out.println("Determinant: " + matrix.determinant());
     }
 }
