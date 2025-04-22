@@ -1,3 +1,5 @@
+package Projects.Maths;
+
 import java.util.*;
 import java.io.*;
 
@@ -5,43 +7,90 @@ class Matrix{
     private int row, column;
     private double[][] data;
 
+    // Constructors
+
     Matrix(int row, int column){
+        if (row <= 0 || column <= 0){
+            throw new IllegalArgumentException("Matrix Dimentions must be positive.");
+        }
         this.row = row;
         this.column = column;
         this.data = new double[row][column];
     }
+
     Matrix(int row, int column, double[][] data){
         this(row, column);
-        this.data = data;
-    }
-    public Matrix(double[][] data) {
-        this.data = data;
-        this.row = data.length;
-        this.column = data[0].length;
+        if (data == null || data.length != row || (data.length > 0 && data[0].length != column)){
+            throw new IllegalArgumentException("Data Array dimentions do no match specified rows and column.");
+        }
+        for (int i=0; i<row; i++){
+            System.arraycopy(data[i], 0, this.data[i], 0, column);
+        }
     }
 
-    void setMatrix(double[][] data){
-        this.data = data;
+    Matrix(double[][] data) {
+        if (data == null || data == null || data[0] == null){
+            throw new IllegalArgumentException("Data Array dimentions do no match specified rows and column.");
+        }
+        this.row = data.length;
+        this.column = data[0].length;
+        for (int i=0; i<row; i++){
+            System.arraycopy(data[i], 0, this.data[i], 0, column);
+        }
     }
+
+    // Setter Methords
+
+    void setMatrix(double[][] data){
+        if (data == null || data.length != this.row || data[0].length != row){
+            throw new IllegalArgumentException("Data Array dimentions do not match Matrix dimentions");
+        }
+        for (int i=0; i<this.row; i++){
+            System.arraycopy(data[i], 0, this.data[i], 0, column);
+        }
+    }
+
     void setValue(int row, int col, double data) {
+        if (row <= 0 || row > this.row || col <= 0 || col> column){
+            throw new IllegalArgumentException("Element index out of bounds.");
+        }
         this.data[row][col] = data;
     }
+
+    void setMatrix(List<int[]> rows, int i) {
+        // Set data for each row in matrix
+        for (int j = 0; j < rows.get(i).length; j++) {
+            this.data[i][j] = rows.get(i)[j];
+        }
+    }
+
+    // Getter Methords
 
     int getRow(){
         return row;
     }
+
     int getColumn(){
         return column;
     }
 
+    // Add Matrix
+
     void addMatrix(Matrix m){
+        if (m == null || m.row != this.row || m.column != this.column){
+            throw new IllegalArgumentException("Matrices must have same diementions for Addition.");
+        }
         for (int i=0; i<row; i++){
             for (int j=0; j<column; j++){
                 data[i][j] += m.data[i][j];
             }
         }
     }
+
     static Matrix addMatrix(Matrix a, Matrix b){
+        if (a == null || b==null || a.row != b.row || a.column != b.column){
+            throw new IllegalArgumentException("Matrices must have same dimentions for Addition.");
+        }
         Matrix x = new Matrix(a.row, a.column);
         for (int i=0; i<a.row; i++){
             for (int j=0; j<a.column; j++){
@@ -50,14 +99,24 @@ class Matrix{
         }
         return x;
     }
+
+    // Substract Matrix
+
     void subMatrix(Matrix m){
+        if (m == null || m.row != this.row || m.column != this.column){
+            throw new IllegalArgumentException("Matrices must have same dimentions for Substraction");
+        }
         for (int i=0; i<row; i++){
             for (int j=0; j<column; j++){
                 data[i][j] -= m.data[i][j];
             }
         }
     }
+
     static Matrix subMatrix(Matrix a, Matrix b){
+        if (a == null || b==null || a.row != b.row || a.column != b.column){
+            throw new IllegalArgumentException("Matrices must have same dimentions for Substraction.");
+        }
         Matrix x = new Matrix(a.row, a.column);
         for (int i=0; i<a.row; i++){
             for (int j=0; j<a.column; j++){
@@ -66,7 +125,11 @@ class Matrix{
         }
         return x;
     }
+
     void multiplyMatrix(Matrix m){
+        if (m == null || this.column != m.row){
+            throw new IllegalArgumentException("For Matrix Multiplication number of columns in first Matrix must be equal to number of rows in second Matrix");
+        }
         Matrix x = new Matrix(this.row, m.column);
         for (int i=0; i<x.row; i++){
             for (int j=0; j<x.column; j++){
@@ -75,10 +138,15 @@ class Matrix{
                 }
             }
         }
-        this.row = x.row;   this.column = x.column;
+        this.row = x.row;
+        this.column = x.column;
         this.data = x.data;
     }
+
     static Matrix multiplyMatrix(Matrix a, Matrix b){
+        if (a == null || b == null || a.column != b.row){
+            throw new IllegalArgumentException("For Matrix Multiplication number of columns in first Matrix must be equal to number of rows in second Matrix");
+        }
         Matrix x = new Matrix(a.row, b.column);
         for (int i=0; i<x.row; i++){
             for (int j=0; j<x.column; j++){
@@ -89,27 +157,35 @@ class Matrix{
         }
         return x;
     }
+
+    // Transpose of Matrix
+
     void transposeMatrix(){
-        double temp;
+        Matrix result = new Matrix(this.column, this.column);
         for(int i=0; i<this.row; i++){
             for (int j=0; j<this.column/2; j++){
-                temp = this.data[i][j];
-                this.data[i][j] = this.data[j][i];
-                this.data[j][i] = temp;
+                result.data[j][i] = this.data[i][j];
             }
         }
+        this.row = result.row;
+        this.column = result.column;
+        this.data = result.data;
     }
+
     static Matrix transposeMatrix(Matrix x){
-        double temp;
+        if (x == null){
+            throw new IllegalArgumentException("Matrix cannot be null");
+        }
+        Matrix result = new Matrix(x.column, x.row);
         for(int i=0; i<x.row; i++){
             for (int j=0; j<x.column/2; j++){
-                temp = x.data[i][j];
-                x.data[i][j] = x.data[j][i];
-                x.data[j][i] = temp;
+                result.data[i][j] = x.data[j][i];
             }
         }
-        return x;
+        return result;
     }
+
+    // Scalar
     void scalarMultiply(double n){
         for (int i=0; i<this.row; i++){
             for (int j=0; j<this.column; j++){
@@ -117,19 +193,31 @@ class Matrix{
             }
         }
     }
+
+    // Determine Type of Matrix 
     String typeOfMatrix(){
-        String type = "";
-        if (this.row == this.column)    type.concat("\tSquare Matrix");
-        if (this.row == 1)              type.concat("\tRow Matrix");
-        if (this.column ==1)            type.concat("\tColumn Matrix");
-        
-        return type;
+        StringBuilder type = new StringBuilder();
+        if (this.row == this.column){
+            if (type.length() > 0)   type.append(", ");
+            type.append("Square Matrix");
+        }
+        if (row == 1) {
+            if (type.length() > 0) type.append(", ");
+            type.append("Row Matrix");
+        }
+        if (column == 1) {
+            if (type.length() > 0) type.append(", ");
+            type.append("Column Matrix");
+        }
+        return type.length() > 0 ? type.toString() : "General Matrix";
     }
 
     // Minor
     Matrix minorMatrix(int row, int col){
+        if (row <0 || row >= this.row || col < 0 || col >= this.column ){
+            throw new IllegalArgumentException("Invalid Index for minor.");
+        }
         Matrix minorMatrix = new Matrix(this.row -1, this.column -1);
-        
         int minorRow =0;
         for(int i=0; i<this.row; i++){
             if (i == row)   continue;
@@ -143,9 +231,9 @@ class Matrix{
             }
             minorRow++;
         }
-
         return minorMatrix;
     }
+
 /**
     // determinant using cofactor expansion
     double determinant() {
@@ -172,7 +260,9 @@ class Matrix{
         return det;
     }
 */
+
     //determinant using gaussian elimination
+
     // Method to convert the matrix to upper triangular form
     public void toUpperTriangular() {
         for (int i = 0; i < this.row; i++) {
@@ -205,15 +295,7 @@ class Matrix{
             }
         }
     }
-    // Method to display the matrix (for debugging/verification)
-    public void display() {
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
-                System.out.print(data[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
+
     // Method to calculate rank using upper triangular form
     public int rank() {
         toUpperTriangular(); // Convert to upper triangular form
@@ -318,16 +400,9 @@ class Matrix{
         return new Matrix(rows, cols, data);
         }
     }
-
-    void setMatrix(List<int[]> rows, int i) {
-        // Set data for each row in matrix
-        for (int j = 0; j < rows.get(i).length; j++) {
-            this.data[i][j] = rows.get(i)[j];
-        }
-    }
 }
 
-class MatrixOperations {
+/**class MatrixOperations {
     public static void main(String[] args) {
 /**
         Scanner sc = new Scanner(System.in);
@@ -360,7 +435,7 @@ class MatrixOperations {
                 case 2:
                     break;
                 case 3:
-                    break;
+                    break;.
                 default:
                     System.out.println("\t\tInvalid Input.\n");
                     break;
@@ -370,23 +445,101 @@ class MatrixOperations {
 }
 
 *///
-        double[][] matrixData = {
-        {2, -1, 1},
-        {3, 3, 9},
-        {3, 3, 5}
-    };
-
-        Matrix matrix = new Matrix(matrixData);
-
-        System.out.println("Original Matrix:");
-        matrix.display();
-
-        // Calculate rank
-        int rank = matrix.rank();
-        System.out.println("Rank of the matrix: " + rank);
-
-        // Calculate determinant
-        double det = matrix.determinant();
-        System.out.println("Determinant of the matrix: " + det);
+/**        double[][] matrixData = {
+            {5, 3, 1, 4, 6, 2, 7},
+            {2, 4, 7, 1, 8, 9, 3},
+            {1, 5, 3, 9, 4, 7, 2},
+            {6, 8, 4, 2, 1, 5, 9},
+            {3, 9, 2, 7, 5, 6, 4},
+            {4, 1, 5, 3, 9, 8, 6},
+            {7, 2, 6, 5, 3, 4, 1}
+        };
+*/
+    public class MatrixOperations {
+        public static void main(String[] args) {
+            Scanner sc = new Scanner(System.in);
+            
+            // User input for matrix dimensions and values
+            System.out.print("Enter the number of rows for the matrix: ");
+            int rows = sc.nextInt();
+            System.out.print("Enter the number of columns for the matrix: ");
+            int cols = sc.nextInt();
+    
+            // Create and populate first matrix
+            double[][] data1 = new double[rows][cols];
+            System.out.println("Enter values for the first matrix:");
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    System.out.print("Enter value for matrix1[" + (i+1) + "][" + (j+1) + "]: ");
+                    data1[i][j] = sc.nextDouble();
+                }
+            }
+    
+            // Create and populate second matrix
+            double[][] data2 = new double[rows][cols];
+            System.out.println("Enter values for the second matrix:");
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    System.out.print("Enter value for matrix2[" + (i+1) + "][" + (j+1) + "]: ");
+                    data2[i][j] = sc.nextDouble();
+                }
+            }
+    
+            Matrix matrix1 = new Matrix(rows, cols, data1);
+            Matrix matrix2 = new Matrix(rows, cols, data2);
+    
+            int choice = 0;
+            while (true) {
+                System.out.println("\n=============================");
+                System.out.println("Matrix Operations Menu:");
+                System.out.println("1. Add Matrices");
+                System.out.println("2. Subtract Matrices");
+                System.out.println("3. Multiply Matrices");
+                System.out.println("4. Transpose Matrix");
+                System.out.println("5. Display Matrix");
+                System.out.println("6. Exit");
+                System.out.print("Enter your choice: ");
+                choice = sc.nextInt();
+    
+                switch (choice) {
+                    case 1: // Add matrices
+                        Matrix resultAdd = Matrix.addMatrix(matrix1, matrix2);
+                        System.out.println("Matrix Addition Result:");
+                        resultAdd.printMatrix();
+                        break;
+    
+                    case 2: // Subtract matrices
+                        Matrix resultSub = Matrix.subMatrix(matrix1, matrix2);
+                        System.out.println("Matrix Subtraction Result:");
+                        resultSub.printMatrix();
+                        break;
+    
+                    case 3: // Multiply matrices
+                        Matrix resultMul = Matrix.multiplyMatrix(matrix1, matrix2);
+                        System.out.println("Matrix Multiplication Result:");
+                        resultMul.printMatrix();
+                        break;
+    
+                    case 4: // Transpose matrix
+                        System.out.println("Transpose of Matrix 1:");
+                        Matrix transposed = Matrix.transposeMatrix(matrix1);
+                        transposed.printMatrix();
+                        break;
+    
+                    case 5: // Display matrix
+                        System.out.println("Displaying Matrix 1:");
+                        matrix1.printMatrix();
+                        break;
+    
+                    case 6: // Exit
+                        System.out.println("Exiting...");
+                        sc.close();
+                        return;
+    
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
     }
-}
