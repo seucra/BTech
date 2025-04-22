@@ -3,23 +3,23 @@ import java.io.*;
 
 class Matrix{
     private int row, column;
-    private int[][] data;
+    private double[][] data;
 
     Matrix(int row, int column){
         this.row = row;
         this.column = column;
-        this.data = new int[row][column];
+        this.data = new double[row][column];
     }
-    Matrix(int row, int column, int[][] data){
+    Matrix(int row, int column, double[][] data){
         this(row, column);
         this.data = data;
     }
 
-    void setMatrix(int[][] data){
+    void setMatrix(double[][] data){
         this.data = data;
     }
-    void setValue(int row, int col, int value) {
-        data[row][col] = value;
+    void setValue(int row, int col, double data) {
+        this.data[row][col] = data;
     }
 
     int getRow(){
@@ -43,7 +43,7 @@ class Matrix{
                 x.data[i][j] = a.data[i][j] + b.data[i][j];
             }
         }
-        return b;
+        return x;
     }
     void subMatrix(Matrix m){
         for (int i=0; i<row; i++){
@@ -59,7 +59,7 @@ class Matrix{
                 x.data[i][j] = a.data[i][j] - b.data[i][j];
             }
         }
-        return b;
+        return x;
     }
     void multiplyMatrix(Matrix m){
         Matrix x = new Matrix(this.row, m.column);
@@ -85,7 +85,7 @@ class Matrix{
         return x;
     }
     void transposeMatrix(){
-        int temp;
+        double temp;
         for(int i=0; i<this.row; i++){
             for (int j=0; j<this.column/2; j++){
                 temp = this.data[i][j];
@@ -95,7 +95,7 @@ class Matrix{
         }
     }
     static Matrix transposeMatrix(Matrix x){
-        int temp;
+        double temp;
         for(int i=0; i<x.row; i++){
             for (int j=0; j<x.column/2; j++){
                 temp = x.data[i][j];
@@ -105,7 +105,7 @@ class Matrix{
         }
         return x;
     }
-    void scalarMultiplyMatrix(int n){
+    void scalarMultiply(double n){
         for (int i=0; i<this.row; i++){
             for (int j=0; j<this.column; j++){
                 this.data[i][j] *= n;
@@ -122,7 +122,7 @@ class Matrix{
     }
 
     // Minor
-    public Matrix minorMatrix(int row, int col){
+    Matrix minorMatrix(int row, int col){
         Matrix minorMatrix = new Matrix(this.row -1, this.column -1);
         
         int minorRow =0;
@@ -142,17 +142,21 @@ class Matrix{
         return minorMatrix;
     }
     // determinant using cofactor expansion
-    public int determinant() {
+    double determinant() {
         if (this.row != this.column) {
             throw new IllegalArgumentException("Matrix must be square (rows == columns)");
         }
 
+        // Base case for 1x1 matrix
+        if (this.row == 1){
+            return this.data[0][0];
+        }
         // Base case for 2x2 matrix
         if (this.row == 2) {
             return (this.data[0][0] * this.data[1][1]) - (this.data[0][1] * this.data[1][0]);
         }
 
-        int det = 0;
+        double det = 0;
 
         // Loop for cofactor expansion along the first row
         for (int i = 0; i < this.row; i++) {
@@ -162,10 +166,32 @@ class Matrix{
         return det;
     }
 
+    // matrix adjecency
+    Matrix adjMatrix(){
+        Matrix adjecentMatrix = new Matrix(this.row, this.column);
+        for (int i=0; i<this.row; i++){
+            for (int j=0; j<this.column; j++){
+                adjecentMatrix.data[i][j] = (Math.pow(-1, i+j) *  minorMatrix(i, j).determinant());
+            }
+        }
+        return adjecentMatrix;
+    }
+
     // matrix inversion
+    Matrix inverseofMatrix(){
+        double det = this.determinant();
+        if (det == 0) {
+            throw new ArithmeticException("Matrix is not invertible (determinant is zero)");
+        }
+        Matrix inverseMatrix =  this.adjMatrix();
+        double temp = 1 / this.determinant();
+        inverseMatrix.scalarMultiply(temp);
+        return inverseMatrix;
+    }
+
     // matrix rank
 
-    public void printMatrix() {
+    void printMatrix() {
         for (int i = 0; i < this.row; i++) {
             for (int j = 0; j < this.column; j++) {
                 System.out.print(data[i][j] + " ");
@@ -190,15 +216,15 @@ class Matrix{
     static Matrix readFromFile(String filename) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
-            List<int[]> rows = new ArrayList<>();  // List to store rows as int arrays
+            List<double[]> rows = new ArrayList<>();  // List to store rows as int arrays
     
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(" ");  // Split line into string elements
-                int[] row = new int[tokens.length]; // Create a new row for the matrix
+                double[] row = new double[tokens.length]; // Create a new row for the matrix
     
-                // Convert string elements to integers and store them in the row
+                // Convert string elements to doubble and store them in the row
                 for (int i = 0; i < tokens.length; i++) {
-                    row[i] = Integer.parseInt(tokens[i]);
+                    row[i] = Double.parseDouble(tokens[i]);
                 }
                 rows.add(row);  // Add the row to the list
             }
@@ -268,22 +294,23 @@ class MatrixOperations {
                     break;
             }
         }
+    }
+}
 *///
 try {
     // Create a sample matrix
     Matrix m = new Matrix(3, 3);
-    m.setValue(0, 0, 1);
-    m.setValue(0, 1, 2);
-    m.setValue(0, 2, 3);
-    m.setValue(1, 0, 4);
-    m.setValue(1, 1, 5);
-    m.setValue(1, 2, 6);
-    m.setValue(2, 0, 7);
-    m.setValue(2, 1, 8);
-    m.setValue(2, 2, 9);
-    
+    int k=0;
+    int y=4;
+    for(int i=0; i<3; i++){
+        for (int j=0; j<3; j++)
+            m.setValue(i, j, k*3+5+y/2);
+        y+=y*2;
+        k+=9;
+    }
+    Matrix n = m.inverseofMatrix();
     // Write the matrix to a file
-    m.writeToFile("matrix.txt");
+    n.writeToFile("matrix.txt");
 
     // Read the matrix from the file
     Matrix readMatrix = Matrix.readFromFile("matrix.txt");

@@ -1,8 +1,6 @@
-package BTech.Projects.maths;
-
 import java.util.Scanner;
 
-public class GeometryCalculator {
+class GeometryCalculator {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Point2D[] points2D = new Point2D[4]; // Array for 2D points (2 per line)
