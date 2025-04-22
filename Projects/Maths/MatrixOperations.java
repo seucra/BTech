@@ -14,6 +14,11 @@ class Matrix{
         this(row, column);
         this.data = data;
     }
+    public Matrix(double[][] data) {
+        this.data = data;
+        this.row = data.length;
+        this.column = data[0].length;
+    }
 
     void setMatrix(double[][] data){
         this.data = data;
@@ -130,7 +135,7 @@ class Matrix{
             if (i == row)   continue;
 
             int minorColumn =0;
-            for(int j=0; j<this.row; j++){
+            for(int j=0; j<this.column; j++){
                 if (j == col)       continue;
 
                 minorMatrix.setValue(minorRow, minorColumn, this.data[i][j]);
@@ -141,6 +146,7 @@ class Matrix{
 
         return minorMatrix;
     }
+/**
     // determinant using cofactor expansion
     double determinant() {
         if (this.row != this.column) {
@@ -159,8 +165,83 @@ class Matrix{
         double det = 0;
 
         // Loop for cofactor expansion along the first row
-        for (int i = 0; i < this.row; i++) {
+        for (int i = 0; i < this.column; i++) {
             det += (int) Math.pow(-1, i) * this.data[0][i] * minorMatrix(0, i).determinant();
+        }
+
+        return det;
+    }
+*/
+    //determinant using gaussian elimination
+    // Method to convert the matrix to upper triangular form
+    public void toUpperTriangular() {
+        for (int i = 0; i < this.row; i++) {
+            // Find the pivot row (the one with the largest absolute value in column i)
+            int pivotRow = i;
+            for (int j = i + 1; j < this.row; j++) {
+                if (Math.abs(data[j][i]) > Math.abs(data[pivotRow][i])) {
+                    pivotRow = j;
+                }
+            }
+
+            // If pivot is zero, skip this column, the matrix is singular
+            if (data[pivotRow][i] == 0) {
+                continue;
+            }
+
+            // Swap the current row with the pivot row
+            if (pivotRow != i) {
+                double[] temp = data[i];
+                data[i] = data[pivotRow];
+                data[pivotRow] = temp;
+            }
+
+            // Perform row operations to zero out elements below the pivot
+            for (int j = i + 1; j < this.row; j++) {
+                double factor = data[j][i] / data[i][i];
+                for (int k = i; k < this.column; k++) {
+                    data[j][k] -= factor * data[i][k];
+                }
+            }
+        }
+    }
+    // Method to display the matrix (for debugging/verification)
+    public void display() {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
+                System.out.print(data[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+    // Method to calculate rank using upper triangular form
+    public int rank() {
+        toUpperTriangular(); // Convert to upper triangular form
+        int rank = 0;
+
+        // Count non-zero rows in the upper triangular matrix
+        for (int i = 0; i < this.row; i++) {
+            boolean isNonZeroRow = false;
+            for (int j = 0; j < this.column; j++) {
+                if (data[i][j] != 0) {
+                    isNonZeroRow = true;
+                    break;
+                }
+            }
+            if (isNonZeroRow) {
+                rank++;
+            }
+        }
+
+        return rank;
+    }
+    // Method to calculate the determinant from upper triangular form
+    public double determinant() {
+        toUpperTriangular();  // Convert matrix to upper triangular form
+
+        double det = 1;
+        for (int i = 0; i < this.row; i++) {
+            det *= data[i][i];  // Multiply diagonal elements
         }
 
         return det;
@@ -190,7 +271,6 @@ class Matrix{
     }
 
     // matrix rank
-
     void printMatrix() {
         for (int i = 0; i < this.row; i++) {
             for (int j = 0; j < this.column; j++) {
@@ -296,30 +376,25 @@ class MatrixOperations {
         }
     }
 }
+
 *///
-try {
-    // Create a sample matrix
-    Matrix m = new Matrix(3, 3);
-    int k=0;
-    int y=4;
-    for(int i=0; i<3; i++){
-        for (int j=0; j<3; j++)
-            m.setValue(i, j, k*3+5+y/2);
-        y+=y*2;
-        k+=9;
-    }
-    Matrix n = m.inverseofMatrix();
-    // Write the matrix to a file
-    n.writeToFile("matrix.txt");
+        double[][] matrixData = {
+        {2, -1, 1},
+        {3, 3, 9},
+        {3, 3, 5}
+    };
 
-    // Read the matrix from the file
-    Matrix readMatrix = Matrix.readFromFile("matrix.txt");
+        Matrix matrix = new Matrix(matrixData);
 
-    // Print the matrix read from file
-    readMatrix.printMatrix();
+        System.out.println("Original Matrix:");
+        matrix.display();
 
-} catch (IOException e) {
-    e.printStackTrace();
-}
+        // Calculate rank
+        int rank = matrix.rank();
+        System.out.println("Rank of the matrix: " + rank);
+
+        // Calculate determinant
+        double det = matrix.determinant();
+        System.out.println("Determinant of the matrix: " + det);
     }
 }
