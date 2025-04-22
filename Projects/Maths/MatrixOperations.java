@@ -203,47 +203,39 @@ class Matrix{
 
     public void writeToFile(String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            for (int i = 0; i < this.row; i++) {
-                for (int j = 0; j < this.column; j++) {
-                    writer.write(data[i][j] + " ");  // Writing each element separated by a space
+        writer.write(row + "," + column);
+        writer.newLine();
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
+                writer.write(String.valueOf(data[i][j]));
+                if (i != row - 1 || j != column - 1) {
+                    writer.write(",");
                 }
-                writer.newLine();  // Move to the next line after each row
             }
         }
+    }
     }
 
     // Method to read matrix data from a file
     static Matrix readFromFile(String filename) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            List<double[]> rows = new ArrayList<>();  // List to store rows as int arrays
-    
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.split(" ");  // Split line into string elements
-                double[] row = new double[tokens.length]; // Create a new row for the matrix
-    
-                // Convert string elements to doubble and store them in the row
-                for (int i = 0; i < tokens.length; i++) {
-                    row[i] = Double.parseDouble(tokens[i]);
-                }
-                rows.add(row);  // Add the row to the list
+        // Read matrix size
+        String[] sizeParts = reader.readLine().split(",");
+        int rows = Integer.parseInt(sizeParts[0].trim());
+        int cols = Integer.parseInt(sizeParts[1].trim());
+
+        // Read all numbers
+        String[] values = reader.readLine().split(",");
+        double[][] data = new double[rows][cols];
+        int index = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                data[i][j] = Double.parseDouble(values[index++].trim());
             }
-    
-            // Determine matrix dimensions (rows and columns)
-            int rowCount = rows.size();
-            int columnCount = rows.get(0).length;
-    
-            // Create a new Matrix object with the appropriate dimensions
-            Matrix matrix = new Matrix(rowCount, columnCount);
-    
-            // Fill the matrix with data
-            for (int i = 0; i < rowCount; i++) {
-                for (int j = 0; j < columnCount; j++) {
-                    matrix.setValue(i, j, rows.get(i)[j]);  // Set each element in the matrix
-                }
-            }
-    
-            return matrix;  // Return the populated matrix
+        }
+
+        return new Matrix(rows, cols, data);
         }
     }
 
