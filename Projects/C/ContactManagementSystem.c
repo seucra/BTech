@@ -35,12 +35,13 @@ typedef struct Queue
 typedef struct StackNode
 {
     char action[100];       // Eg: "add:hohn,1234567890"
-    struct StackNode *next;
+    struct StackNode *prev;
 }StackNode;
 
 typedef struct Stack
 {
     StackNode *top;
+    int top;
 }Stack;
 
 // Global Variables
@@ -50,7 +51,7 @@ Node *head = NULL;              // Linked List Head
 Node *bstRoot = NULL;           // BST Root
 GraphNode *adj[100] = {NULL};   // Graph Adjecency List
 Queue queue = {NULL, NULL};     // Queue for Sync Request
-Stack stack = {NULL};           // Stack for Undo Actions
+Stack *stack = {NULL, 0};           // Stack for Undo Actions
 
 // Function Declarations
 // Array Functions
@@ -67,14 +68,14 @@ int enqueue(Queue *q, char *request);
 char* dequeue(Queue *q);
 
 // Stack Functions
-void push(struct Stack *s, char *action);
-char* pop(struct Stack *s);
-/**
-// BST Functions
-struct Node* insertBST(struct Node *root, struct Contact c);
-struct Node* searchBST(struct Node *root, char *name);
-void displayBST(struct Node *root);
+int push(Stack *s, char *action);
+char* pop(Stack *s);
 
+// BST Functions
+struct Node* insertBST(Node *root, Contact c);
+struct Node* searchBST(Node *root, char *name);
+void displayBST(Node *root);
+/**
 // Graph Functions
 void addEdge(int from, int to);
 void bfs(int start);
@@ -479,4 +480,62 @@ int loadContacts()
     return 1;
 }
 
+int push(char *action)
+{
+    
+    StackNode *newNode = malloc(sizeof(StackNode));
+    if (newNode == NULL)
+    {
+        printf("Memory Allocation for Stack Failed...\n");
+        return 0;
+    }
+    strcpy(newNode->action, action);
+    newNode->prev = stack->top;
+    stack->top = newNode;
+    return 1;
+}
+
+char* pop(Stack *s)
+{
+    if (s->top == 0)
+    {
+        printf("Stack Empty...\n");
+        return NULL;
+    }
+    StackNode *pointer = s->top;
+    s->top = s->top->prev;
+
+    char action[100];
+    strcpy(action, pointer->action);
+
+    free(pointer);
+    return action;
+}
+
+Node* insertBST(Node *root, Contact c)
+{
+    if (root == NULL)
+    {
+        Node *newNode = malloc(sizeof(Node));
+        if (newNode == NULL)
+        {
+            printf("Memory Allocation Failed...\n");
+            return NULL;
+        }
+        newNode->contact = c;
+        newNode->left = newNode->right = NULL;
+        return newNode;
+    }
+
+    if (strcmp(c.name, root->contact.name) < 0)
+    {
+        root->left = insertBST(root->left, c);
+    }
+    else
+    {
+        root->right = insertBST(root->right, c);
+    }
+
+    return root;
+}
 
