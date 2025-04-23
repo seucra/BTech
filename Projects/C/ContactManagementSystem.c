@@ -63,7 +63,7 @@ int displayList();
 int deleteFromList(char *name);
 
 // Queue Functions
-int enqueue(Queue *q, *request);
+int enqueue(Queue *q, char *request);
 char* dequeue(Queue *q);
 /**
 // Stack Functions
@@ -78,11 +78,11 @@ void displayBST(struct Node *root);
 // Graph Functions
 void addEdge(int from, int to);
 void bfs(int start);
-
-// File Handling Functions
-void saveContacts();
-void loadContacts();
 */
+// File Handling Functions
+int saveContacts();
+int loadContacts();
+
 
 // Main Function
 int main()
@@ -155,13 +155,13 @@ int main()
                 scanf("%d", &id);
                 bfs(id);
                 break;
-            case 9: // Save to File
+*/            case 9: // Save to File
                 saveContacts();
                 break;
             case 10: // Load from File
                 loadContacts();
                 break;
-*/            case 11: // Exit
+            case 11: // Exit
                 return 0;
             default:
                 printf("Invalid choice\n\n");
@@ -221,13 +221,6 @@ int addContact()
         return 0;
     }
 
-    char req[100];
-    sprintf(req, "add:%s,%s,%s", name, phone, email);
-    if ( !enqueue(&queue, req) )
-    {
-
-    }
-
     contactcount++;
     return 1;
 }
@@ -244,7 +237,7 @@ int displayContacts()
     {
         if (contacts[i] != NULL)
         {
-            printf("%d : %-20s : %-15s : %-30s\n", i, contacts[i]->name , contacts[i]->phone, contacts[i]->email);
+            printf("%d : %-20s : %-15s : %-30s\n", i+1, contacts[i]->name , contacts[i]->phone, contacts[i]->email);
         }
     }
 
@@ -256,48 +249,30 @@ int addToList(Contact c)
 {
     if (c.name[0] == '\0')
     {
+        printf("Name is NULL");
         return 0;
     }
     Node *newNode = malloc(sizeof(QueueNode));
     if (newNode == NULL)
     {
-
-    } = malloc(sizeof(Node));
-    if (newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
-    {
-
-    } == NULL)
-    {
         printf("Memory Allocation for Contact failled...\n");
         return 0;
     }
 
-    newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
+    char req[100];
+    sprintf(req, "add:%s,%s,%s", c.name, c.phone, c.email);
+    if ( !enqueue(&queue, req) )
     {
+        printf("Memory Allocation for Sync Request Failled...\n");
+        free(newNode);
+        return 0;
+    }
 
-    }->contact = c;
-    newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
-    {
+    newNode->contact = c;
+    newNode->next = head;
+    newNode->left = newNode->right = NULL;
+    head = newNode;
 
-    }->next = head;
-    newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
-    {
-
-    }->left = newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
-    {
-
-    }->right = NULL;
-    head = newNode = malloc(sizeof(QueueNode));
-    if (newNode == NULL)
-    {
-
-    };
-    
     printf("\nAdded to Contacts\n\t%s : %s : %s\n\n", c.name, c.phone, c.email);
     return 1;
 }
@@ -383,8 +358,8 @@ int enqueue(Queue *q, char *request)
         q->rear = newNode;
     }
 
-    pritnf("Request Enqueued...\n");
-    return 1;1
+    printf("Request Enqueued...\n");
+    return 1;
 }
 
 char* dequeue(Queue *q)
@@ -396,7 +371,8 @@ char* dequeue(Queue *q)
     }
 
     QueueNode *pointer = q->front;
-    char req = pointer->request;
+    char *req = malloc(sizeof(pointer->request));
+    strcpy(req, pointer->request);
 
     q->front = pointer->next;
     if (q->front == NULL)
@@ -409,3 +385,66 @@ char* dequeue(Queue *q)
     return req;
 }
 
+int saveContacts()
+{
+    FILE *myfile;
+    char str[10000];
+
+    myfile = fopen("data.csv", "a");
+    if (myfile == NULL)
+    {
+        printf("File Openning Failed...\n");
+        return 0;
+    }
+
+    for (int i=0; i<contactcount; i++)
+    {
+        fprintf(myfile, "%s,%s,%s\n", contacts[i]->name, contacts[i]->phone, contacts[i]->email);
+    }
+
+    fclose(myfile);
+    return 1;
+}
+
+int loadContacts()
+{
+    FILE *myfile;
+    char line[10000];
+    char *token;
+
+    myfile = fopen("data.csv", "r");
+    if (myfile == NULL)
+    {
+        printf("File Openning Failed...\n");
+        return 0;
+    }
+
+    // Read Each Line
+    while (fgets(line, sizeof(line), myfile))
+    {
+        // Split line into tokens based on comma
+        token = strtok(line, ",");
+        if (token != NULL) {
+            strcpy(contacts[contactcount].name, token);  // Store name
+        }
+
+        token = strtok(NULL,  ",");
+        if (token != NULL) {
+            strcpy(contacts[contactcount]->phone , phone);
+        }
+
+        token = strtok(NULL,  ",");
+        if (token != NULL) {
+            strcpy(contacts[contactcount]->email , email);
+        }
+
+        contactcount++;
+        if (contactcount >= MAX_CONTACTS) {
+            printf("Max contact limit reached\n");
+            break;
+        }
+    }
+
+    fclose(myfile);
+    return 1;
+}
