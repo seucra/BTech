@@ -145,7 +145,12 @@ int main()
                 searchBST(bstRoot, name);
                 break;
             case 6: // Sync Requests
-                dequeue(&queue);
+                char *req = dequeue(&queue);
+                if (req)
+                {
+                    printf("%s\n", req);
+                    free(req);
+                }
                 break;
             case 7: // Undo
                 pop(&stack);
@@ -199,16 +204,18 @@ int addContact()
     if (strlen(phone) != 10 || strspn(phone, "0123456789") != 10)
     {
         printf("Invalid Phone Number...\n");
+        free(contacts[contactcount]);
         return 0;
     }
 
-    while(getchar() != '\n');
+    //while(getchar() != '\n');
     printf("Enter email : ");
     fgets(email, sizeof(email), stdin);
     email[strcspn(email, "\n")] = '\0';
     if (strchr(email, '@') == NULL || strchr(email, '.') == NULL || strchr(email, '@') > strchr(email, '.'))
     {
         printf("Invalid Email ID...\n");
+        free(contacts[contactcount]);
         return 0;
     }
 
@@ -253,7 +260,7 @@ int addToList(Contact c)
         printf("Name is NULL");
         return 0;
     }
-    Node *newNode = malloc(sizeof(QueueNode));
+    Node *newNode = malloc(sizeof(Node));
     if (newNode == NULL)
     {
         printf("Memory Allocation for Contact failled...\n");
@@ -274,7 +281,24 @@ int addToList(Contact c)
     newNode->left = newNode->right = NULL;
     head = newNode;
 
-    printf("\nAdded to Contacts\n\t%s : %s : %s\n\n", c.name, c.phone, c.email);
+    char request[100];
+    sprintf(request, "add:%s,%s,%s", name, phone, email);
+
+    if ( !push(&stack, request) )
+    {
+        printf("Failed to Push Request to Stack...\n");
+        free(newNode);
+        return 0;
+    }
+    
+    bstRoot = insertBST(bstRoot, *contacts[contactcount]);
+    if (bstRoot == NULL)
+    {
+        printf("Failed to Insert Contact to BST...\n")
+        free(newNode);
+        return 0;
+    }
+    
     return 1;
 }
 
@@ -315,7 +339,7 @@ int deleteFromList(char *name)
     {
         head = head->next;
         free(pointer);
-        contacts[contactcount-1] = NULL;
+        contacts[--contactcount] = NULL;
         return 1;
     }
 
@@ -362,13 +386,13 @@ int enqueue(Queue *q, char *request)
         q->rear = newNode;
     }
 
-    printf("Request Enqueued...\n");
+    //printf("Request Enqueued...\n");
     return 1;
 }
 
 char* dequeue(Queue *q)
 {
-    if (q == NULL)
+    if (q->front == NULL)
     {
         printf("Queue is empty. Nothing to Dequeue.\n");
         return NULL;
@@ -387,13 +411,14 @@ char* dequeue(Queue *q)
 
     printf("Request Dequeued...\n");
     return req;
+    // Save contacts  by parsing the request
 }
 
 int saveContacts()
 {
     FILE *myfile;
 
-    myfile = fopen("data.csv", "a");
+    myfile = fopen("data.csv", "w");
     if (myfile == NULL)
     {
         printf("File Openning Failed...\n");
