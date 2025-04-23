@@ -61,11 +61,11 @@ int displayContacts();
 int addToList(Contact c);
 int displayList();
 int deleteFromList(char *name);
-/**
-// Queue Functions
-int enqueue(struct Queue *q, char *request);
-char* dequeue(struct Queue *q);
 
+// Queue Functions
+int enqueue(Queue *q, *request);
+char* dequeue(Queue *q);
+/**
 // Stack Functions
 void push(struct Stack *s, char *action);
 char* pop(struct Stack *s);
@@ -200,6 +200,7 @@ int addContact()
         printf("Invalid Phone Number...\n");
         return 0;
     }
+
     while(getchar() != '\n');
     printf("Enter email : ");
     fgets(email, sizeof(email), stdin);
@@ -219,6 +220,14 @@ int addContact()
         free(contacts[contactcount]);
         return 0;
     }
+
+    char req[100];
+    sprintf(req, "add:%s,%s,%s", name, phone, email);
+    if ( !enqueue(&queue, req) )
+    {
+
+    }
+
     contactcount++;
     return 1;
 }
@@ -249,17 +258,45 @@ int addToList(Contact c)
     {
         return 0;
     }
-    Node *newNode = malloc(sizeof(Node));
+    Node *newNode = malloc(sizeof(QueueNode));
     if (newNode == NULL)
+    {
+
+    } = malloc(sizeof(Node));
+    if (newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    } == NULL)
     {
         printf("Memory Allocation for Contact failled...\n");
         return 0;
     }
 
-    newNode->contact = c;
-    newNode->next = head;
-    newNode->left = newNode->right = NULL;
-    head = newNode;
+    newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    }->contact = c;
+    newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    }->next = head;
+    newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    }->left = newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    }->right = NULL;
+    head = newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+
+    };
     
     printf("\nAdded to Contacts\n\t%s : %s : %s\n\n", c.name, c.phone, c.email);
     return 1;
@@ -303,7 +340,7 @@ int deleteFromList(char *name)
         contacts[contactcount] = NULL;
         return 1;
     }
-    
+
     int index = contactcount-1;
     while (strcmp(pointer->next->contact.name , name))
     {
@@ -322,5 +359,53 @@ int deleteFromList(char *name)
     free(delnode);
 
     return 1;
+}
+
+int enqueue(Queue *q, char *request)
+{
+    QueueNode *newNode = malloc(sizeof(QueueNode));
+    if (newNode == NULL)
+    {
+        printf("Memory Allocation Failed...");
+        return 0;
+    } 
+
+    strcpy(newNode->request, request);
+    newNode->next = NULL;
+
+    if (q->rear == NULL)
+    {
+        q->front = q->rear = newNode;
+    }
+    else
+    {
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+
+    pritnf("Request Enqueued...\n");
+    return 1;1
+}
+
+char* dequeue(Queue *q)
+{
+    if (q == NULL)
+    {
+        printf("Queue is empty. Nothing to Dequeue.\n");
+        return NULL;
+    }
+
+    QueueNode *pointer = q->front;
+    char req = pointer->request;
+
+    q->front = pointer->next;
+    if (q->front == NULL)
+    {
+        q->rear = NULL;
+    }
+    free(pointer);
+
+    printf("Request Dequeued...\n");
+    return req;
 }
 
