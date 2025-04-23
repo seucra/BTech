@@ -115,7 +115,7 @@ int main()
             case 2: // Display Contacts (Array)
                 if ( !displayContacts() )
                 {
-                    printf("No Contacts Stored.\n\n");
+                    printf("Procedure Unsuccessful.\n\n");
                 }
                 break;
             case 3: // Display Contacts (Linked List)
@@ -124,13 +124,21 @@ int main()
                     printf("Procedure Unsuccessful.\n\n");
                 }
                 break;
-/**            case 4: // Delete Contact
+            case 4: // Delete Contact
                 printf("Enter name to delete: ");
                 char name[50];
-                scanf("%49s", name);
-                deleteFromList(name);
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';
+                if ( deleteFromList(name) )
+                {
+                    printf("Procedure Sucessfully.\n\n");
+                }
+                else
+                {
+                    printf("Procedure Unsuccessful.\n\n");
+                }
                 break;
-            case 5: // Search Contact (BST)
+/**            case 5: // Search Contact (BST)
                 printf("Enter name to search: ");
                 scanf("%49s", name);
                 searchBST(bstRoot, name);
@@ -165,19 +173,20 @@ int main()
 // Function Implementations
 int addContact()
 {
-    contacts[contactcount] = malloc(sizeof(Contact));
-
-    if (contacts[contactcount] == NULL)
-    {
-        printf("Memory Allocation for Contact failled...\n");
-        return 0;
-    }
     if (contactcount >= 100)
     {
         printf("Array Full...\n");
         return 0;
     }
-    char name[50],phone[15],email[50];
+
+    contacts[contactcount] = malloc(sizeof(Contact));
+    if (contacts[contactcount] == NULL)
+    {
+        printf("Memory Allocation for Contact failled...\n");
+        return 0;
+    }
+
+    char name[50],phone[11],email[50];
 
     printf("Enter Name : ");
     fgets(name, sizeof(name), stdin);
@@ -186,16 +195,16 @@ int addContact()
     printf("Enter phone number : ");
     fgets(phone, sizeof(phone), stdin);
     phone[strcspn(phone, "\n")] = '\0';
-    if (strlen(phone) != 10)
+    if (strlen(phone) != 10 || strspn(phone, "0123456789") != 10)
     {
         printf("Invalid Phone Number...\n");
         return 0;
     }
-
+    while(getchar() != '\n');
     printf("Enter email : ");
     fgets(email, sizeof(email), stdin);
     email[strcspn(email, "\n")] = '\0';
-    if (strchr(email, '@') == NULL)
+    if (strchr(email, '@') == NULL || strchr(email, '.') == NULL || strchr(email, '@') > strchr(email, '.'))
     {
         printf("Invalid Email ID...\n");
         return 0;
@@ -205,10 +214,9 @@ int addContact()
     strcpy(contacts[contactcount]->phone , phone);
     strcpy(contacts[contactcount]->email , email);
 
-    printf("\nAdded to Contacts\n\t%s : %s : %s\n\n", name, phone, email);
-
     if ( !addToList(*contacts[contactcount]) )
     {
+        free(contacts[contactcount]);
         return 0;
     }
     contactcount++;
@@ -237,6 +245,10 @@ int displayContacts()
 
 int addToList(Contact c)
 {
+    if (c.name[0] == '\0')
+    {
+        return 0;
+    }
     Node *newNode = malloc(sizeof(Node));
     if (newNode == NULL)
     {
@@ -248,6 +260,8 @@ int addToList(Contact c)
     newNode->next = head;
     newNode->left = newNode->right = NULL;
     head = newNode;
+    
+    printf("\nAdded to Contacts\n\t%s : %s : %s\n\n", c.name, c.phone, c.email);
     return 1;
 }
 
@@ -265,8 +279,7 @@ int displayList()
     Node *pointer = head;
     while (pointer != NULL)
     {
-        Contact c = pointer->contact;
-        printf("%d : %-20s : %-15s : %-30s\n", i, c.name , c.phone, c.email);
+        printf("%d : %-20s : %-15s : %-30s\n", contactcount-i, pointer->contact.name , pointer->contact.phone, pointer->contact.email);
         i++;
         pointer = pointer->next;
     }
@@ -282,16 +295,19 @@ int deleteFromList(char *name)
         printf("Memory Empty...\n");
         return 0;
     }
-
     Node *delnode, *pointer = head;
-    if (pointer->contact.name == name)
+    if ( !strcmp(head->contact.name , name))
     {
-        head = pointer->next;
+        head = head->next;
         free(pointer);
+        contacts[contactcount] = NULL;
         return 1;
     }
-    while (pointer->next->contact.name != name)
+    
+    int index = contactcount-1;
+    while (strcmp(pointer->next->contact.name , name))
     {
+        index--;
         pointer = pointer->next;
         if (pointer == NULL)
         {
@@ -299,15 +315,12 @@ int deleteFromList(char *name)
             return 0;
         }
     }
+    contacts[index] = NULL;
 
     delnode = pointer->next;
     pointer->next = pointer->next->next;
     free(delnode);
-    return 1;
-}
 
-int enqueue(Queue *q, char *request)
-{
-    
+    return 1;
 }
 
