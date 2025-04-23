@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Struct DEfinitions
 typedef struct Contact
 {
-    char name[50], phone[15], email[50];
+    char name[50], phone[11], email[50];
 }Contact;
 
 typedef struct Node
@@ -42,7 +44,7 @@ typedef struct Stack
 }Stack;
 
 // Global Variables
-Contact contacts[100];          // Array for Contacts
+Contact *contacts[100];          // Array for Contacts
 int contactcount = 0;
 Node *head = NULL;              // Linked List Head
 Node *bstRoot = NULL;           // BST Root
@@ -52,14 +54,14 @@ Stack stack = {NULL};           // Stack for Undo Actions
 
 // Function Declarations
 // Array Functions
-void addContact();
-void displayContacts();
+int addContact();
+int displayContacts();
 
 // Linked List Functions
-void addToList(struct Contact c);
+void addToList(Contact c);
 void displayList();
 void deleteFromList(char *name);
-
+/**
 // Queue Functions
 void enqueue(struct Queue *q, char *request);
 char* dequeue(struct Queue *q);
@@ -80,7 +82,7 @@ void bfs(int start);
 // File Handling Functions
 void saveContacts();
 void loadContacts();
-
+*/
 
 // Main Function
 int main()
@@ -101,16 +103,22 @@ int main()
         printf("11. Exit\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
-        getchar(); // Clear input buffer
+        while(getchar() != '\n'); // Clear input buffer
 
         switch (choice) {
             case 1: // Add Contact
-                addContact();
+                if ( !addContact() )
+                {
+                    printf("Procedure Unsuccesful.\n")
+                }
                 break;
             case 2: // Display Contacts (Array)
-                displayContacts();
+                if ( !displayContacts() )
+                {
+                    printf("No Contacts Stored.\n");
+                }
                 break;
-            case 3: // Display Contacts (Linked List)
+/**            case 3: // Display Contacts (Linked List)
                 displayList();
                 break;
             case 4: // Delete Contact
@@ -142,10 +150,102 @@ int main()
             case 10: // Load from File
                 loadContacts();
                 break;
-            case 11: // Exit
+*/            case 11: // Exit
                 return 0;
             default:
                 printf("Invalid choice\n");
         }
     }
 }
+
+
+// Function Implementations
+int addContact()
+{
+    contacts[contactcount] = malloc(sizeof(Contact));
+
+    if (contacts[contactcount] == NULL)
+    {
+        printf("Memory Allocation for Contact failled...\n");
+        return 0;
+    }
+    if (contactcount >= 100)
+    {
+        printf("Array Full...\n");
+        return 0;
+    }
+    char name[50],phone[15],email[50];
+
+    printf("Enter Name : ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = '\0';
+
+    printf("Enter phone number : ");
+    fgets(phone, sizeof(phone), stdin);
+    phone[strcspn(phone, "\n")] = '\0';
+    if (strlen(phone) != 11)
+    {
+        printf("Invalid Phone Number...\n");
+        return 0;
+    }
+
+    printf("Enter email : ");
+    fgets(email, sizeof(email), stdin);
+    email[strcspn(email, "\n")] = '\0';
+    if (strchr(email, '@') == NULL)
+    {
+        printf("Invalid Email ID...\n");
+        return 0;
+    }
+
+    strcpy(contacts[contactcount]->name , name);
+    strcpy(contacts[contactcount]->phone , phone);
+    strcpy(contacts[contactcount]->email , email);
+
+    printf("\nAdded to Contacts\n\t%s : %s : %s\n", name, phone, email);
+
+    addToList(*contacts[contactcount]);
+    contactcount++;
+    return 1;
+}
+
+int displayContacts()
+{
+    if (contactcount == 0)
+    {
+        return 0;
+    }
+    printf("Displaying Contacts Stored in Array.\n---\n");
+    printf("\tIndex\tName\tPhone\tEmail\n---\n");
+    for (int i=0; i<contactcount; i++)
+    {
+        if (contacts[i] != NULL)
+        {
+            printf("%d : %-20s : %-15s : %-30s\n", i, contacts[i]->name , contacts[i]->phone, contacts[i]->email);
+        }
+    }
+    printf("---\nDisplay Complete\n\n");
+    return 1;
+}
+
+void addToList(Contact c)
+{
+    Node *newNode = malloc(sizeof(Node));
+    newNode->contact = c;
+    newNode->next = NULL;
+    newNode->left = newNode->right = NULL;
+    if(head == NULL)
+    {
+        head = newNode;
+    }
+    else
+    {
+        Node *pointer = head;
+        while(pointer->next != NULL)
+        {
+            pointer = pointer->next;
+        }
+        pointer->next = newNode;
+    }
+}
+
