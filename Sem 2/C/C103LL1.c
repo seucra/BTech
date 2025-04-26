@@ -13,6 +13,26 @@ typedef struct LL
     node *start;
 }LL;
 
+int count(LL *l)
+{
+    node *p = l->start;
+    int c=0;
+    while (p != NULL)
+    {
+        c++;
+        p = p->next;
+    }
+    return c;
+}
+
+void insertbeg(LL *l, int x)
+{
+    node *newrec = (node*) malloc(sizeof(node));
+    newrec->data = x;
+    newrec->next = l->start;
+    l->start = newrec;
+}
+
 void insertend(LL *l, int x)
 {
     node *newrec = (node*) malloc(sizeof(node));
@@ -34,16 +54,98 @@ void insertend(LL *l, int x)
     }
 }
 
-int count(LL *l)
+int insertpos(LL *l, int x, int ps)
 {
-    node *p = l->start;
-    int c=0;
-    while (p != NULL)
+    int i=1;
+    node *p, *newrec = malloc(sizeof(node));
+    newrec->data = x;
+
+    int c = count(l);
+    if (ps > c)
     {
-        c++;
+        printf("Invalid Position.\n");
+        return 0;
+    }
+
+    p = l->start;
+    while (i<=ps)
+    {
+        i++;
         p = p->next;
     }
-    return c;
+    newrec->next = p->next;
+    p->next = newrec;
+    return 1;
+}
+
+int delbeg(LL *l)
+{
+    node *p = l->start;
+    if (p == NULL)
+    {
+        printf("LL empty\n");
+        return -1;
+    }
+    
+    l->start = l->start->next;
+    int d = p->data;
+    free(p);
+    return d;
+}
+
+int delend(LL *l)
+{
+    if (l->start == NULL)
+    {
+        printf("LL empty\n");
+        return -1;
+    }
+    node *p = l->start;
+    int d;
+    if (p->next == NULL)
+    {
+        d = p->data;
+        l->start = NULL;
+        free(p);
+        return d;
+    }
+    while (p->next->next != NULL)
+    {
+        p = p->next;
+    }
+    node *q = p->next;
+    d = q->data;
+    p->next = NULL;
+    free(q);
+    return d;
+}
+
+int delpos(LL *l, int ps)
+{
+    int c = count(l);
+    if (ps > c)
+    {
+        printf("Invalid Position.\n");
+        return 0;
+    }
+
+    int i=1, d;
+    node *q, *p = l->start;
+    while (i<ps)
+    {
+        i++;
+        p = p->next;
+    }
+    q = p->next;
+    d = q->data;
+    p->next = q->next;
+    free(q);
+    return d;
+}
+
+int search(LL *l, int x)
+{
+    
 }
 
 void display(LL *l)
@@ -87,7 +189,7 @@ int main()
 
     while (1){
         menu();
-        int choice=0, x=0;
+        int choice=0, x=0, p=0;
         scanf("%d", &choice);
         while ( getchar() != '\n');
 
@@ -97,39 +199,75 @@ int main()
                 printf("Enter : ");
                 scanf("%d", &x);
                 while ( getchar() != '\n');
-                
+
+                insertbeg(l, x);
+                printf("Done.\n\n");
                 break;
+
             case 2:
                 printf("Enter : ");
                 scanf("%d", &x);
                 while ( getchar() != '\n');
+
                 insertend(l, x);
                 printf("Done.\n\n");
                 break;
+
             case 3:
-                
+                printf("Enter E&pos: ");
+                scanf("%d", &x);
+                while ( getchar() != '\n');
+                scanf("%d", &p);
+                while ( getchar() != '\n');
+
+                insertpos(l, x, p);
+                printf("Done.\n\n");
                 break;
+
             case 4:
-                
+                x = delbeg(l);
+                printf("Done: %d.\n\n", x);
                 break;
+
             case 5:
+                x = delend(l);
+                printf("Done: %d.\n\n", x);
                 break;
+
             case 6:
+                printf("Enter pos: ");
+                scanf("%d", &x);
+                while ( getchar() != '\n');
+
+                x = delpos(l, x);
+                printf("Done: %d.\n\n", x);
                 break;
+
             case 7:
                 x = count(l);
                 printf("\t\t%d\n", x);
                 break;
+
             case 8:
                 display(l);
                 break;
+
             case 9:
+                printf("Enter E: ");
+                scanf("%d", &x);
+                while ( getchar() != '\n');
+
+                x = search(l, x);
+                printf("Element found at %d\n", x);
                 break;
+
             case 10:
                 break;
+
             case 11:
-                printf("EXiting...\n");
+                printf("Exiting...\n");
                 exit(1);
+
             default:
                 printf("Invalid Input.\n");
         }
