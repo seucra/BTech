@@ -34,14 +34,13 @@ typedef struct Queue
 
 typedef struct StackNode
 {
-    char action[100];       // Eg: "add:hohn,1234567890"
+    char action[150];       // Eg: "add:John,1234567890,john@johnny.bravo"
     struct StackNode *prev;
 }StackNode;
 
 typedef struct Stack
 {
     StackNode *top;
-    int top;
 }Stack;
 
 // Global Variables
@@ -51,7 +50,7 @@ Node *head = NULL;              // Linked List Head
 Node *bstRoot = NULL;           // BST Root
 GraphNode *adj[100] = {NULL};   // Graph Adjecency List
 Queue queue = {NULL, NULL};     // Queue for Sync Request
-Stack *stack = {NULL, 0};           // Stack for Undo Actions
+Stack *stack;           // Stack for Undo Actions
 
 // Function Declarations
 // Array Functions
@@ -153,7 +152,11 @@ int main()
                 }
                 break;
             case 7: // Undo
-                pop(&stack);
+                char *action = pop(&stack);
+                {
+                    printf("%s\n", action);
+                    free(action);
+                }
                 break;
             case 8: // Find Mutual Contacts (BFS)
                 printf("Enter contact ID: ");
@@ -208,7 +211,7 @@ int addContact()
         return 0;
     }
 
-    //while(getchar() != '\n');
+    while(getchar() != '\n');
     printf("Enter email : ");
     fgets(email, sizeof(email), stdin);
     email[strcspn(email, "\n")] = '\0';
@@ -222,13 +225,13 @@ int addContact()
     strcpy(contacts[contactcount]->name , name);
     strcpy(contacts[contactcount]->phone , phone);
     strcpy(contacts[contactcount]->email , email);
-
     if ( !addToList(*contacts[contactcount]) )
     {
         free(contacts[contactcount]);
         return 0;
     }
 
+    printf("Contact with Given Information added.\n");
     contactcount++;
     return 1;
 }
@@ -281,20 +284,20 @@ int addToList(Contact c)
     newNode->left = newNode->right = NULL;
     head = newNode;
 
-    char request[100];
-    sprintf(request, "add:%s,%s,%s", name, phone, email);
+    char request[150];
+    snprintf(request, sizeof(request), "add:%s,%s,%s", c.name, c.phone, c.email);
 
-    if ( !push(&stack, request) )
+    if ( !push(stack, request) )
     {
         printf("Failed to Push Request to Stack...\n");
         free(newNode);
         return 0;
     }
-    
+
     bstRoot = insertBST(bstRoot, *contacts[contactcount]);
     if (bstRoot == NULL)
     {
-        printf("Failed to Insert Contact to BST...\n")
+        printf("Failed to Insert Contact to BST...\n");
         free(newNode);
         return 0;
     }
@@ -505,18 +508,26 @@ int loadContacts()
     return 1;
 }
 
-int push(char *action)
+int push(Stack *s, char *action)
 {
-    
+    if (s == NULL)
+    {
+        s = malloc(sizeof(Stack));
+        if (s == NULL)
+        {
+            printf("Memory Allocation for Stack Failed...\n");
+        }
+    }
+
     StackNode *newNode = malloc(sizeof(StackNode));
     if (newNode == NULL)
     {
-        printf("Memory Allocation for Stack Failed...\n");
+        printf("Memory Allocation for Request Failed...\n");
         return 0;
     }
     strcpy(newNode->action, action);
-    newNode->prev = stack->top;
-    stack->top = newNode;
+    newNode->prev = s->top;
+    s->top = newNode;
     return 1;
 }
 
@@ -530,7 +541,7 @@ char* pop(Stack *s)
     StackNode *pointer = s->top;
     s->top = s->top->prev;
 
-    char action[100];
+    char *action = malloc(sizeof(pointer->action));
     strcpy(action, pointer->action);
 
     free(pointer);
@@ -563,4 +574,3 @@ Node* insertBST(Node *root, Contact c)
 
     return root;
 }
-
