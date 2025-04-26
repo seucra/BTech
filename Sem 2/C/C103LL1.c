@@ -143,10 +143,6 @@ int delpos(LL *l, int ps)
     return d;
 }
 
-int search(LL *l, int x)
-{
-    
-}
 
 void display(LL *l)
 {
@@ -164,6 +160,35 @@ void display(LL *l)
         }
     }
     printf("\n\n");
+}
+
+int search(LL *l, int x)
+{
+    int c=0;
+    node *p = l->start;
+    while (p != NULL)
+    {
+        if (x == p->data)
+        {
+            c++;
+        }
+        p = p->next;
+    }
+    return c;
+}
+
+void reverse(LL *l)
+{
+    LL k, *o = l;
+    node *p = l->start;
+    k.start = NULL;
+
+    while (p != NULL)
+    {
+        insertbeg(&k, p->data);
+        p = p->next;
+    }
+    l->start = k.start;
 }
 
 void menu()
@@ -258,10 +283,14 @@ int main()
                 while ( getchar() != '\n');
 
                 x = search(l, x);
-                printf("Element found at %d\n", x);
+                printf("Element found times : %d\n", x);
                 break;
 
             case 10:
+                reverse(l);
+
+                printf("Reversed :\t");
+                display(l);
                 break;
 
             case 11:
