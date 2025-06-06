@@ -1,5 +1,4 @@
 // Infix to postfix
-// Learned that malloc is important when using gcc to compile. took 2 hours to realize.
 
 #include <stdio.h>
 #include <string.h>

@@ -1,4 +1,4 @@
-// Circular QUEUE
+// Linked List: Circular Queue Implementation
 
 #include <stdio.h>
 #include <stdlib.h>
